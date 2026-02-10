@@ -3,8 +3,8 @@
 import { PenTool, Brush, LayoutGrid, Type, Sparkles, Frame, Image } from "lucide-react";
 
 const stats = [
-  { value: "30+", label: "Projects Completed" },
-  { value: "20+", label: "Happy Clients" },
+  { value: "29+", label: "Projects Completed" },
+  { value: "23+", label: "Happy Clients" },
   { value: "1", label: "Years Experience" },
   { value: "1", label: "Awards Won" },
 ];

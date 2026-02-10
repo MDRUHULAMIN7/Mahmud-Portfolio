@@ -46,7 +46,7 @@ export default function ContactSection() {
     {
       name: "Behance",
       href: "https://www.behance.net/mdmahmud121",
-      value: "behance.net/your-profile",
+      value: "behance.net/mdmahmud121",
       Icon: BehanceIcon,
     },
     {
