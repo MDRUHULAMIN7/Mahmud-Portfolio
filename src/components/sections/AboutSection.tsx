@@ -3,10 +3,10 @@
 import { PenTool, Brush, LayoutGrid, Type, Sparkles, Palette } from "lucide-react";
 
 const stats = [
-  { value: "150+", label: "Projects Completed" },
-  { value: "50+", label: "Happy Clients" },
-  { value: "8", label: "Years Experience" },
-  { value: "12", label: "Awards Won" },
+  { value: "50+", label: "Projects Completed" },
+  { value: "10+", label: "Happy Clients" },
+  { value: "1", label: "Years Experience" },
+  { value: "1", label: "Awards Won" },
 ];
 
 const specialties = [

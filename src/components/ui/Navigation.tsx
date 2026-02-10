@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Lightbulb, Briefcase, User, Mail, ShieldAlert } from "lucide-react";
+import { Home, Wrench, Briefcase, User, Mail } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import ThemeToggle from "./ThemeToggle";
 const links = [
   { href: "/", label: "Home", icon: Home },
   { href: "#about", label: "About", icon: User },
-  { href: "#services", label: "Services", icon: Lightbulb },
+  { href: "#services", label: "Services", icon: Wrench },
   { href: "#projects", label: "Work", icon: Briefcase },
   { href: "#contact", label: "Contact", icon: Mail },
 ];

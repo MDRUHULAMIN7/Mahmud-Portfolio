@@ -3,7 +3,6 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -67,12 +66,6 @@ export default function LoginPage() {
             Sign In
           </button>
         </form>
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Need to create the first admin?{" "}
-          <Link href="/register" className="text-primary font-medium hover:underline">
-            Create Admin
-          </Link>
-        </p>
       </div>
     </div>
   );

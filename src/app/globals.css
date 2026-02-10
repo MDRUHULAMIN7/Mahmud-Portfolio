@@ -101,8 +101,10 @@
 }
 
 @media (pointer: fine) {
-    body {
-        cursor: none;
+    /* Force hide system cursor everywhere to keep custom cursor visible */
+    body,
+    body * {
+        cursor: none !important;
     }
 
     #cursor {

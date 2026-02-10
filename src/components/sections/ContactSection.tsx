@@ -2,7 +2,9 @@
 
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { Linkedin, Facebook, Mail, MessageCircle, Sparkles, Phone } from "lucide-react";
+import { Facebook, Mail, MessageCircle, Sparkles, Phone } from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
 
 const BehanceIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -11,23 +13,39 @@ const BehanceIcon = ({ className }: { className?: string }) => (
 );
 
 export default function ContactSection() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<{
+    name: string;
+    email: string;
+    message: string;
+  }>();
   
-  const onSubmit = (data: unknown) => {
-    console.log(data);
-    alert("Message sent! (Demo)");
+  const onSubmit = async (data: { name: string; email: string; message: string }) => {
+    try {
+      await axios.post("/api/messages", data);
+      toast("Message sent!");
+      reset();
+    } catch (error) {
+      const message =
+        axios.isAxiosError(error)
+          ? (error.response?.data as { error?: string })?.error
+          : undefined;
+      if (message?.toLowerCase().includes("email") || message?.toLowerCase().includes("limit")) {
+        setError("email", { type: "server", message });
+      }
+      toast.error(message || "Failed to send message");
+    }
   };
 
   const socials = [
-    {
-      name: "LinkedIn",
-      href: "https://www.linkedin.com/in/your-profile",
-      value: "linkedin.com/in/your-profile",
-      Icon: Linkedin,
-    },
+    // {
+    //   name: "LinkedIn",
+    //   href: "https://www.linkedin.com/in/your-profile",
+    //   value: "linkedin.com/in/your-profile",
+    //   Icon: Linkedin,
+    // },
     {
       name: "Behance",
-      href: "https://www.behance.net/your-profile",
+      href: "https://www.behance.net/mdmahmud121",
       value: "behance.net/your-profile",
       Icon: BehanceIcon,
     },
@@ -130,30 +148,36 @@ export default function ContactSection() {
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-200">Name</label>
               <input 
-                {...register("name", { required: true })}
+                {...register("name", { required: "Name is required" })}
                 className="w-full rounded-xl border border-black/5 bg-black/5 p-3 text-sm outline-none transition-colors focus:border-orange-500/40 dark:border-white/10 dark:bg-white/5 dark:text-white"
                 placeholder="Your Name"
               />
-              {errors.name && <span className="text-sm text-red-500">Required</span>}
+              {errors.name && <span className="text-sm text-red-500">{errors.name.message}</span>}
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-200">Email</label>
               <input 
-                {...register("email", { required: true })}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Enter a valid email",
+                  },
+                })}
                 className="w-full rounded-xl border border-black/5 bg-black/5 p-3 text-sm outline-none transition-colors focus:border-orange-500/40 dark:border-white/10 dark:bg-white/5 dark:text-white"
                 placeholder="your@email.com"
               />
-              {errors.email && <span className="text-sm text-red-500">Required</span>}
+              {errors.email && <span className="text-sm text-red-500">{errors.email.message}</span>}
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-200">Message</label>
               <textarea 
-                {...register("message", { required: true })}
+                {...register("message", { required: "Message is required" })}
                 rows={4}
                 className="w-full rounded-xl border border-black/5 bg-black/5 p-3 text-sm outline-none transition-colors focus:border-orange-500/40 dark:border-white/10 dark:bg-white/5 dark:text-white"
                 placeholder="Tell me about your project..."
               />
-              {errors.message && <span className="text-sm text-red-500">Required</span>}
+              {errors.message && <span className="text-sm text-red-500">{errors.message.message}</span>}
             </div>
             <button
               type="submit"
