@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { MoveRight, Sparkles } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 // Design tool logos as SVG paths (simplified)
 const ToolCard = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
@@ -261,15 +262,20 @@ export default function HeroSection() {
           transition={{ delay: 1 }}
           className="pt-4 md:pt-8"
         >
-          <motion.button 
+          <motion.div 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="group relative inline-flex w-full items-center justify-center gap-3 rounded-full bg-linear-to-r from-orange-500 via-red-500 to-orange-500 px-6 py-3 text-sm font-bold text-white shadow-2xl shadow-orange-500/50 transition-all duration-300 overflow-hidden sm:w-auto sm:px-10 sm:py-5 sm:text-base lg:text-lg"
+            className="inline-flex"
           >
-            <span className="absolute inset-0 bg-linear-to-r from-orange-600 via-red-600 to-orange-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            <span className="relative">Explore My Work</span>
-            <MoveRight className="relative w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2" />
-          </motion.button>
+            <Link
+              href="#projects"
+              className="group relative inline-flex w-full items-center justify-center gap-3 rounded-full bg-linear-to-r from-orange-500 via-red-500 to-orange-500 px-6 py-3 text-sm font-bold text-white shadow-2xl shadow-orange-500/50 transition-all duration-300 overflow-hidden sm:w-auto sm:px-10 sm:py-5 sm:text-base lg:text-lg"
+            >
+              <span className="absolute inset-0 bg-linear-to-r from-orange-600 via-red-600 to-orange-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <span className="relative">Explore My Work</span>
+              <MoveRight className="relative w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2" />
+            </Link>
+          </motion.div>
         </motion.div>
 
         {/* Scroll indicator with style */}

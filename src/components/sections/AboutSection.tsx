@@ -1,21 +1,22 @@
 "use client";
 
-import { PenTool, Brush, LayoutGrid, Type, Sparkles, Palette } from "lucide-react";
+import { PenTool, Brush, LayoutGrid, Type, Sparkles, Frame, Image } from "lucide-react";
 
 const stats = [
-  { value: "50+", label: "Projects Completed" },
-  { value: "10+", label: "Happy Clients" },
+  { value: "30+", label: "Projects Completed" },
+  { value: "20+", label: "Happy Clients" },
   { value: "1", label: "Years Experience" },
   { value: "1", label: "Awards Won" },
 ];
 
 const specialties = [
   { label: "Branding", icon: Brush },
+  { label: "Thumbail Designe", icon: Image},
   { label: "Typography", icon: Type },
   { label: "Editorial", icon: LayoutGrid },
   { label: "UI/UX", icon: Sparkles },
   { label: "Illustration", icon: PenTool },
-  { label: "Motion Graphics", icon: Palette },
+  { label: "Photoshop", icon: Frame  },
 ];
 
 export default function AboutSection() {

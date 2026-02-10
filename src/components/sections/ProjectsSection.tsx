@@ -52,6 +52,10 @@ export default function ProjectsSection() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project: IProject, index) => {
               const cover = project.thumbnailImage || project.posterImage;
+              const projectId =
+                typeof project._id === "string"
+                  ? project._id
+                  : (project._id as { toString?: () => string } | undefined)?.toString?.();
               return (
                 <motion.div
                   key={project._id}
@@ -61,7 +65,8 @@ export default function ProjectsSection() {
                   transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.06 }}
                 >
                   <Link
-                    href={`/projects/${project._id}`}
+                    href={projectId ? `/projects/${projectId}` : "#projects"}
+                    aria-disabled={!projectId}
                     className="group relative block overflow-hidden rounded-3xl border border-black/10 bg-white shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-2 hover:border-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-white/10 dark:bg-neutral-950 dark:shadow-black/40"
                   >
                     <div className="absolute inset-0 bg-linear-to-br from-orange-500/10 via-transparent to-red-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

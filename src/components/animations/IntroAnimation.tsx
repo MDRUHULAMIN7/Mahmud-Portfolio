@@ -2,17 +2,23 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { usePathname } from "next/navigation";
 
 export default function IntroAnimation() {
   const comp = useRef(null);
-  const [complete, setComplete] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("introSeen") === "1";
-  });
+  const [complete, setComplete] = useState(false);
+  const pathname = usePathname();
 
   useLayoutEffect(() => {
-    if (complete) return;
-    localStorage.setItem("introSeen", "1");
+    if (pathname !== "/") return;
+    if (typeof window === "undefined") return;
+    const seen = sessionStorage.getItem("introSeen") === "1";
+    if (seen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setComplete(true);
+      return;
+    }
+    sessionStorage.setItem("introSeen", "1");
     const ctx = gsap.context(() => {
       const t1 = gsap.timeline({
         onComplete: () => setComplete(true),
@@ -23,46 +29,46 @@ export default function IntroAnimation() {
         scale: 0,
         rotation: 180,
         opacity: 0,
-        duration: 0.5,
+        duration: 0.8,
         stagger: 0.14,
         ease: "back.out(1.2)",
       })
       .from("#intro-hi", {
         opacity: 0,
         y: 30,
-        duration: 0.8,
+        duration: 1.1,
         ease: "power3.out",
       }, "-=0.4")
       .from("#intro-name", {
         opacity: 0,
         x: -50,
-        duration: 0.9,
+        duration: 1.2,
         ease: "power3.out",
       }, "-=0.25")
       .from("#intro-subtitle", {
         opacity: 0,
         scale: 0.8,
-        duration: 0.8,
+        duration: 1.1,
         ease: "power3.out",
       }, "-=0.35")
       .to([".shape", "#intro-hi", "#intro-name", "#intro-subtitle"], {
         opacity: 0,
         y: -30,
-        duration: 0.9,
-        delay: 0.9,
+        duration: 1.1,
+        delay: 0.1,
       })
       .to("#intro-slider", {
         yPercent: -100,
-        duration: 1.8,
+        duration: 0.8,
         ease: "power3.inOut",
       });
 
     }, comp);
 
     return () => ctx.revert();
-  }, [complete]);
+  }, [complete, pathname]);
 
-  if (complete) return null;
+  if (pathname !== "/" || complete) return null;
 
   return (
     <div ref={comp} className="fixed inset-0 z-50 pointer-events-none">

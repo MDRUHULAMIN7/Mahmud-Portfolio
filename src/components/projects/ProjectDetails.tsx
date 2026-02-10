@@ -7,7 +7,14 @@ import { Heart, ExternalLink, ArrowLeft, Sparkles, Layers } from "lucide-react";
 import { IProject } from "@/models/Project";
 import { useEffect, useState } from "react";
 
-export default function ProjectDetails({ project }: { project: IProject }) {
+type SerializedProject = Omit<IProject, "createdAt" | "updatedAt" | "publishDate"> & {
+  _id?: string;
+  createdAt: string;
+  updatedAt: string;
+  publishDate: string;
+};
+
+export default function ProjectDetails({ project }: { project: SerializedProject }) {
   const cover = project.thumbnailImage || project.posterImage;
   const hasGallery = project.elementsImages && project.elementsImages.length > 0;
   const [likes, setLikes] = useState(project.likes ?? 0);
@@ -128,45 +135,15 @@ export default function ProjectDetails({ project }: { project: IProject }) {
 
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-              className="rounded-3xl border border-black/5 bg-white/70 p-5 shadow-lg shadow-black/5 dark:border-white/10 dark:bg-neutral-950"
-            >
-
-              {project.posterImage ? (
-                <div className="relative w-full overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/10 dark:bg-neutral-900">
-                  {/* Maintains original aspect ratio */}
-                  <div className="relative w-full">
-                    <Image
-                      src={project.posterImage}
-                      alt={`${project.title} poster`}
-                      width={800}
-                      height={1000}
-                      className="h-auto w-full"
-                      style={{ objectFit: "contain" }}
-                      sizes="(min-width: 1024px) 30vw, 80vw"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-dashed border-black/10 p-6 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
-                  No poster image yet. The thumbnail is the primary visual for this project.
-                </div>
-              )}
-              <h2 className="mt-4 text-lg font-semibold text-neutral-900 dark:text-white">After</h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Those Before elements here used to build the Project.
-              </p>
-            </motion.div>
-
-            <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.25 }}
               className="rounded-3xl border border-black/5 bg-white/70 p-5 shadow-lg shadow-black/5 dark:border-white/10 dark:bg-neutral-950"
             >
-
+              <h2 className="mt-4 text-lg font-semibold text-neutral-900 dark:text-white">Before</h2>
+              <p className="text-sm mb-4 text-neutral-500 dark:text-neutral-400">
+                These elements were used to build the Project.
+              </p>
               {hasGallery ? (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {project.elementsImages.map((url, idx) => (
@@ -197,11 +174,42 @@ export default function ProjectDetails({ project }: { project: IProject }) {
                   Elements not added yet. These usually show the pieces used to craft the poster or thumbnail.
                 </div>
               )}
-              <h2 className="mt-4 text-lg font-semibold text-neutral-900 dark:text-white">Before</h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                These elements were used to build the thumbnail or poster.
-              </p>
+
             </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+              className="rounded-3xl border border-black/5 bg-white/70 p-5 shadow-lg shadow-black/5 dark:border-white/10 dark:bg-neutral-950"
+            >
+              <h2 className="mt-4 text-lg font-semibold text-neutral-900 dark:text-white">After</h2>
+              <p className="text-sm mb-4 text-neutral-500 dark:text-neutral-400">
+                Those Before elements here used to build the Project.
+              </p>
+              {project.posterImage ? (
+                <div className="relative w-full overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/10 dark:bg-neutral-900">
+                  {/* Maintains original aspect ratio */}
+                  <div className="relative w-full">
+                    <Image
+                      src={project.posterImage}
+                      alt={`${project.title} poster`}
+                      width={800}
+                      height={1000}
+                      className="h-auto w-full"
+                      style={{ objectFit: "contain" }}
+                      sizes="(min-width: 1024px) 30vw, 80vw"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-black/10 p-6 text-sm text-gray-500 dark:border-white/10 dark:text-gray-400">
+                  No poster image yet. The thumbnail is the primary visual for this project.
+                </div>
+              )}
+
+            </motion.div>
+
+            
           </div>
         </motion.div>
       </div>

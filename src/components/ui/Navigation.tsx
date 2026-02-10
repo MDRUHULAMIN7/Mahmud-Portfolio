@@ -23,6 +23,7 @@ export default function Navigation() {
 
   if (isDashboard) return null;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!isHome) return;
 
