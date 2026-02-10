@@ -1,26 +1,161 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+    --color-primary: #4F46E5;
+    --color-secondary: #7C3AED;
+    --color-background-light: #F8FAFC;
+    --color-background-dark: #0F172A;
+    --color-text-light: #1E293B;
+    --color-text-dark: #F1F5F9;
+
+    --animate-intro: intro 1s ease-out forwards;
+    --animate-float: float 3s ease-in-out infinite;
+
+    @keyframes intro {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Custom Utilities */
+@utility glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@utility glass-dark {
+    @apply backdrop-blur-md bg-black/30 border border-white/10;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Base Styles */
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-background-light text-text-light transition-colors duration-300;
+    }
+
+    .dark body {
+        @apply bg-background-dark text-text-dark;
+    }
+
+    :root {
+        --cursor-accent: #ff4500;
+        --cursor-ring: #ff4500;
+        --cursor-glow: rgba(255, 69, 0, 0.3);
+    }
+}
+
+.site-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(circle at top left, rgba(255, 140, 90, 0.2), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(255, 110, 140, 0.18), transparent 55%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.98));
+    opacity: 1;
+}
+
+.site-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.25;
+    background-image:
+        linear-gradient(rgba(255, 140, 80, 0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 140, 80, 0.14) 1px, transparent 1px);
+    background-size: 48px 48px;
+}
+
+.dark .site-bg {
+    background:
+        radial-gradient(circle at top left, rgba(255, 120, 80, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(255, 80, 120, 0.18), transparent 55%),
+        linear-gradient(135deg, rgba(7, 7, 10, 0.95), rgba(14, 14, 20, 0.98));
+    opacity: 0.95;
+}
+
+.dark .site-bg::after {
+    opacity: 0.35;
+}
+
+@media (pointer: fine) {
+    body {
+        cursor: none;
+    }
+
+    #cursor {
+        width: 30px;
+        height: 30px;
+        border: 1.2px solid var(--cursor-ring);
+        border-radius: 999px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0;
+        --cursor-scale: 1;
+        transition: opacity 0.2s ease, transform 0.15s ease;
+        box-shadow: 0 0 15px var(--cursor-glow);
+    }
+
+    #cursor.active {
+        opacity: 1;
+    }
+
+    #cursor.pressed {
+        --cursor-scale: 0.85;
+    }
+
+    body.cursor-hover #cursor {
+        --cursor-scale: 1.2;
+    }
+
+    #cursor-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--cursor-accent);
+        border-radius: 999px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        box-shadow: 0 0 10px var(--cursor-glow);
+    }
+}
+
+@media (pointer: coarse) {
+    #cursor,
+    #cursor-dot {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
 }
