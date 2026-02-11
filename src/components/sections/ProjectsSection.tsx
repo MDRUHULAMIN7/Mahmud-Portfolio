@@ -7,15 +7,39 @@ import Link from "next/link";
 import { Heart, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
+type ProjectCardProject = Pick<
+  IProject,
+  "_id" | "title" | "description" | "thumbnailImage" | "posterImage" | "likes"
+>;
+
+type ProjectsResponse = {
+  projects: ProjectCardProject[];
+  total: number;
+};
+
+type CountResponse = {
+  total: number;
+};
+
 export default function ProjectsSection() {
-  const [projects, setProjects] = useState<IProject[]>([]);
+  const [projects, setProjects] = useState<ProjectCardProject[]>([]);
+  const [totalProjects, setTotalProjects] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const { data } = await axios.get("/api/projects?published=true");
-        setProjects(data);
+        const cardFields = encodeURIComponent(
+          "_id title description thumbnailImage posterImage likes"
+        );
+        const [{ data: featuredData }, { data: publishedData }] = await Promise.all([
+          axios.get<ProjectsResponse>(
+            `/api/projects?published=true&featured=true&withMeta=true&limit=6&page=1&fields=${cardFields}`
+          ),
+          axios.get<CountResponse>("/api/projects?published=true&countOnly=true"),
+        ]);
+        setProjects(featuredData.projects);
+        setTotalProjects(publishedData.total);
       } catch (err) {
         console.error("Failed to fetch projects", err);
       } finally {
@@ -24,7 +48,6 @@ export default function ProjectsSection() {
     };
     fetchProjects();
   }, []);
-
   return (
     <section id="projects" className="py-10">
       <div className=" px-4 sm:px-6">
@@ -49,72 +72,84 @@ export default function ProjectsSection() {
         {loading ? (
           <div className="text-center text-sm text-neutral-500">Loading projects...</div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project: IProject, index) => {
-              const cover = project.thumbnailImage || project.posterImage;
-              const projectId =
-                typeof project._id === "string"
-                  ? project._id
-                  : (project._id as { toString?: () => string } | undefined)?.toString?.();
-              return (
-                <motion.div
-                  key={project._id}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.06 }}
-                >
-                  <Link
-                    href={projectId ? `/projects/${projectId}` : "#projects"}
-                    aria-disabled={!projectId}
-                    className="group relative block overflow-hidden rounded-3xl border border-black/10 bg-white shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-2 hover:border-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-white/10 dark:bg-neutral-950 dark:shadow-black/40"
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project, index) => {
+                const cover = project.thumbnailImage || project.posterImage;
+                const projectId =
+                  typeof project._id === "string"
+                    ? project._id
+                    : (project._id as { toString?: () => string } | undefined)?.toString?.();
+                return (
+                  <motion.div
+                    key={project._id}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.06 }}
                   >
-                    <div className="absolute inset-0 bg-linear-to-br from-orange-500/10 via-transparent to-red-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    <div className="relative">
-                      <div className="relative aspect-4/3 overflow-hidden bg-gray-100 dark:bg-gray-800">
-                        {cover ? (
-                          <Image
-                            src={cover}
-                            alt={project.title}
-                            fill
-                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                            className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400">
-                            No image
+                    <Link
+                      href={projectId ? `/projects/${projectId}` : "#projects"}
+                      aria-disabled={!projectId}
+                      className="group relative block overflow-hidden rounded-3xl border border-black/10 bg-white shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-2 hover:border-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-white/10 dark:bg-neutral-950 dark:shadow-black/40"
+                    >
+                      <div className="absolute inset-0 bg-linear-to-br from-orange-500/10 via-transparent to-red-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                      <div className="relative">
+                        <div className="relative aspect-4/3 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                          {cover ? (
+                            <Image
+                              src={cover}
+                              alt={project.title}
+                              fill
+                              sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400">
+                              No image
+                            </div>
+                          )}
+                          <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-600 backdrop-blur dark:bg-neutral-900/70 dark:text-orange-300">
+                            <Sparkles className="h-3.5 w-3.5" />
+                            Featured
                           </div>
-                        )}
-                        <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-600 backdrop-blur dark:bg-neutral-900/70 dark:text-orange-300">
-                          <Sparkles className="h-3.5 w-3.5" />
-                          Featured
                         </div>
-                      </div>
 
-                      <div className="space-y-3 p-5">
-                        <div>
-                          <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
-                            {project.title}
-                          </h3>
-                          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                            {project.description}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
-                          <span className="inline-flex items-center gap-2">
-                            <Heart className="h-4 w-4 text-orange-500" />
-                            {project.likes ?? 0} likes
-                          </span>
-                          <span className="rounded-full border border-orange-500/20 px-2 py-1 text-[10px] uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
-                            View Project
-                          </span>
+                        <div className="space-y-3 p-5">
+                          <div>
+                            <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
+                              {project.title}
+                            </h3>
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                              {project.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
+                            <span className="inline-flex items-center gap-2">
+                              <Heart className="h-4 w-4 text-orange-500" />
+                              {project.likes ?? 0} likes
+                            </span>
+                            <span className="rounded-full border border-orange-500/20 px-2 py-1 text-[10px] uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
+                              View Project
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              );
-            })}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+            {totalProjects > 6 && (
+              <div className="flex justify-center">
+                <Link
+                  href="/all-projects"
+                  className="inline-flex items-center rounded-full border border-orange-500/40 bg-orange-500/10 px-6 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-orange-600 transition hover:bg-orange-500/20 dark:text-orange-300"
+                >
+                  Show More
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>

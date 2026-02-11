@@ -58,16 +58,19 @@ export default function ProjectDetails({ project }: { project: SerializedProject
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="mb-8 flex flex-wrap items-center justify-between gap-4"
         >
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+          <Link href="/#projects" className="inline-flex items-center gap-2  text-gray-200 hover:text-orange-300">
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            Back
           </Link>
           <button
             onClick={handleLike}
             disabled={liking || hasLiked}
-            className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white/80 px-3 py-1 text-xs text-gray-600 shadow-sm shadow-black/5 hover:bg-black/5 disabled:opacity-60 dark:border-white/10 dark:bg-white/10 dark:text-gray-300 dark:hover:bg-white/15"
+            className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white/80 px-3  text-gray-600 shadow-sm shadow-black/5 hover:bg-black/5  dark:border-white/10 dark:bg-white/10 dark:text-gray-300 dark:hover:bg-white/15"
           >
-            <Heart className="h-3 w-3" />
+            <Heart
+              className={`h-4 w-4 ${hasLiked ? "text-orange-500" : ""}`}
+              fill={hasLiked ? "currentColor" : "none"}
+            />
             {likes} {likes === 1 ? "like" : "likes"}
           </button>
         </motion.div>

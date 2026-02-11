@@ -12,6 +12,7 @@ export interface IProject {
   publishDate: Date;
   accessibleLink?: string;
   published: boolean;
+  featuredOnHome: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,6 +29,7 @@ const ProjectSchema = new Schema<IProject>(
     publishDate: { type: Date, default: Date.now },
     accessibleLink: { type: String },
     published: { type: Boolean, default: false },
+    featuredOnHome: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

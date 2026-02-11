@@ -30,7 +30,7 @@ export default function AboutSection() {
             Crafting visual systems that feel premium, clear, and alive.
           </h2>
           <p className="mt-6 text-base leading-7 text-neutral-600 dark:text-white/70">
-            I&apos;m Mahmud, a graphics designer with 8+ years of experience creating compelling visual narratives for brands across industries.
+            I&apos;m Mahmud, a graphics designer with 1+ years of experience creating compelling visual narratives for brands across industries.
             My approach blends strategy with creative excellence so every design looks beautiful and works effectively.
           </p>
           <p className="mt-4 text-base leading-7 text-neutral-600 dark:text-white/70">

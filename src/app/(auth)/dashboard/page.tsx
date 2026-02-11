@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import axios from "axios";
-import { Plus, Trash2, LogOut, Pencil, Eye, EyeOff, X } from "lucide-react";
+import { Plus, Trash2, LogOut, Pencil, Eye, EyeOff, X, Star } from "lucide-react";
 import type { IProject } from "@/models/Project";
 import type { IContactMessage } from "@/models/ContactMessage";
 import Image from "next/image";
@@ -17,6 +17,7 @@ type ProjectForm = {
   thumbnailImage: string;
   posterImage: string;
   accessibleLink?: string;
+  featuredOnHome: boolean;
 };
 
 export default function Dashboard() {
@@ -129,6 +130,7 @@ export default function Dashboard() {
       thumbnailImage: project.thumbnailImage,
       posterImage: project.posterImage,
       accessibleLink: project.accessibleLink,
+      featuredOnHome: project.featuredOnHome ?? false,
     });
   };
 
@@ -151,6 +153,24 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Failed to update publish status", error);
       toast.error("Failed to update publish status");
+    }
+  };
+
+  const toggleFeatured = async (project: IProject) => {
+    try {
+      await axios.patch("/api/projects", {
+        id: project._id,
+        featuredOnHome: !project.featuredOnHome,
+      });
+      const updated = await loadProjects();
+      setProjects(updated);
+    } catch (error) {
+      const message =
+        axios.isAxiosError(error)
+          ? (error.response?.data as { error?: string })?.error
+          : undefined;
+      console.error("Failed to update featured status", error);
+      toast.error(message || "Failed to update featured status");
     }
   };
 
@@ -334,7 +354,7 @@ export default function Dashboard() {
                         <div className="mt-3 flex flex-wrap gap-2">
                           {elementsImages.map((url, idx) => (
                             <span key={`${url}-${idx}`} className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs">
-                              <span className="max-w-[180px] truncate">{url}</span>
+                              <span className="max-w-45 truncate">{url}</span>
                               <button
                                 type="button"
                                 onClick={() => handleRemoveElementImage(idx)}
@@ -348,6 +368,10 @@ export default function Dashboard() {
                         </div>
                       )}
                     </div>
+                    <label className="md:col-span-2 inline-flex items-center gap-2 text-sm">
+                      <input type="checkbox" {...register("featuredOnHome")} />
+                      Feature this project on Home (max 6)
+                    </label>
                   </div>
                   <div className="flex items-center gap-3">
                     <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
@@ -384,10 +408,31 @@ export default function Dashboard() {
                       <h3 className="font-bold mb-1">{project.title}</h3>
                       <p className="text-gray-500 text-sm mb-4 truncate">{project.description}</p>
                       <div className="flex flex-wrap justify-between items-center gap-2 text-sm">
-                        <span className={`px-2 py-1 rounded-full ${project.published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                          {project.published ? 'Published' : 'Draft'}
-                        </span>
                         <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded-full ${project.published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                            {project.published ? 'Published' : 'Draft'}
+                          </span>
+                          {project.featuredOnHome && (
+                            <span className="px-2 py-1 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => toggleFeatured(project)}
+                            className={`px-2 py-1 rounded-lg ${
+                              project.featuredOnHome
+                                ? "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300"
+                                : "bg-gray-100 dark:bg-gray-800"
+                            }`}
+                            title={project.featuredOnHome ? "Remove from home featured" : "Feature on home"}
+                          >
+                            <span className="inline-flex items-center gap-1">
+                              <Star className="w-4 h-4" />
+                              {project.featuredOnHome ? "Featured" : "Feature"}
+                            </span>
+                          </button>
                           <button
                             onClick={() => togglePublish(project)}
                             className="px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800"
