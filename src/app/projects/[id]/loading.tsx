@@ -1,44 +1,66 @@
+import Footer from "@/components/ui/Footer";
+import Navigation from "@/components/ui/Navigation";
+
 export default function LoadingProjectDetails() {
   return (
-    <div className="min-h-screen bg-linear-to-b from-white via-slate-50 to-white dark:from-black dark:via-neutral-950 dark:to-black">
-      <div className="mx-auto max-w-6xl px-4 py-10 md:px-8">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div className="h-5 w-28 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-          <div className="h-8 w-24 animate-pulse rounded-full bg-neutral-200 dark:bg-neutral-800" />
-        </div>
-
-        <div className="space-y-8">
-          <div className="rounded-3xl border border-black/5 bg-white/85 p-6 dark:border-white/10 dark:bg-white/5">
-            <div className="h-6 w-40 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-            <div className="mt-4 h-10 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-            <div className="mt-3 h-5 w-full animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-            <div className="mt-2 h-5 w-2/3 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-          </div>
-
-          <div className="h-105 w-full animate-pulse rounded-3xl border border-black/5 bg-neutral-200 dark:border-white/10 dark:bg-neutral-800" />
-
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="space-y-3 rounded-3xl border border-black/5 bg-white/70 p-5 dark:border-white/10 dark:bg-neutral-950">
-              <div className="h-6 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-              <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="h-24 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-800"
-                  />
-                ))}
-              </div>
+    <>
+      <Navigation />
+      <main className="detail">
+        <div className="container">
+          <div id="detail">
+            <div className="back">
+              <span className="pd-skeleton" style={{ width: 110, height: 16 }} />
             </div>
 
-            <div className="space-y-3 rounded-3xl border border-black/5 bg-white/70 p-5 dark:border-white/10 dark:bg-neutral-950">
-              <div className="h-6 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-              <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-200 dark:bg-neutral-800" />
-              <div className="h-85 animate-pulse rounded-2xl bg-neutral-200 dark:bg-neutral-800" />
+            <div className="pd-layout">
+              <aside className="pd-left">
+                <div className="pd-skeleton" style={{ width: 120, height: 14, marginBottom: 16 }} />
+                <div className="pd-skeleton" style={{ width: "70%", height: 52, marginBottom: 22 }} />
+                <div className="pd-skeleton" style={{ width: "100%", height: 16, marginBottom: 10 }} />
+                <div className="pd-skeleton" style={{ width: "82%", height: 16, marginBottom: 24 }} />
+                <div className="pd-skeleton" style={{ width: "55%", height: 16, marginBottom: 14 }} />
+                <div className="pd-skeleton" style={{ width: 180, height: 44, borderRadius: 999 }} />
+              </aside>
+
+              <section className="pd-center">
+                <div className="pd-shot">
+                  <div className="pd-skeleton" style={{ width: "100%", aspectRatio: "4 / 3" }} />
+                </div>
+                <div className="pd-shot">
+                  <div className="pd-skeleton" style={{ width: "100%", aspectRatio: "4 / 3" }} />
+                </div>
+              </section>
+
+              <aside className="pd-right">
+                <div className="pd-stats">
+                  {Array.from({ length: 4 }).map((_, index) => (
+                    <span
+                      className="pd-skeleton"
+                      key={index}
+                      style={{ width: 110, height: 28, borderRadius: 8 }}
+                    />
+                  ))}
+                </div>
+                <div className="pd-socials">
+                  {Array.from({ length: 4 }).map((_, index) => (
+                    <span
+                      className="pd-skeleton"
+                      key={index}
+                      style={{ width: 38, height: 38, borderRadius: "50%" }}
+                    />
+                  ))}
+                </div>
+                <div className="pd-meta-card">
+                  <div className="pd-skeleton" style={{ width: 64, height: 13 }} />
+                  <div className="pd-skeleton" style={{ width: "80%", height: 13 }} />
+                  <div className="pd-skeleton" style={{ width: "55%", height: 13 }} />
+                </div>
+              </aside>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }

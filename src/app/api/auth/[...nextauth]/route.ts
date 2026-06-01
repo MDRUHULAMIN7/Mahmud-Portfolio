@@ -4,6 +4,8 @@ import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
+const isBcryptHash = (password: string) => /^\$2[aby]\$\d{2}\$/.test(password);
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -18,19 +20,24 @@ export const authOptions: NextAuthOptions = {
         }
 
         await dbConnect();
-        const user = await User.findOne({ email: credentials.email });
+        const email = credentials.email.trim().toLowerCase();
+        const user = await User.findOne({ email });
 
         if (!user) {
           throw new Error('No user found with this email');
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isValid = isBcryptHash(user.password)
+          ? await bcrypt.compare(credentials.password, user.password)
+          : credentials.password === user.password;
 
         if (!isValid) {
           throw new Error('Incorrect password');
+        }
+
+        if (!isBcryptHash(user.password)) {
+          user.password = await bcrypt.hash(credentials.password, 10);
+          await user.save();
         }
 
         return {

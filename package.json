@@ -14,7 +14,7 @@
     "clsx": "latest",
     "framer-motion": "latest",
     "gsap": "latest",
-    "lucide-react": "latest",
+    "lucide-react": "^1.17.0",
     "mongoose": "latest",
     "next": "16.1.6",
     "next-auth": "latest",

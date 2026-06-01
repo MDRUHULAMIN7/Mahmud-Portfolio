@@ -3,7 +3,8 @@ import Link from "next/link";
 import dbConnect from "@/lib/db";
 import Project, { type IProject } from "@/models/Project";
 import Category, { type ICategory } from "@/models/Category";
-import { Heart, FolderOpen } from "lucide-react";
+import { Heart, ArrowLeft, FolderOpen } from "lucide-react";
+import { notFound } from "next/navigation";
 
 export const revalidate = 300;
 
@@ -23,31 +24,31 @@ function getVisiblePages(currentPage: number, totalPages: number) {
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 }
 
-export default async function AllProjectsPage({
+export default async function CategoryPage({
+  params,
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; category?: string }>;
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const params = await searchParams;
-  const page = Math.max(1, Number(params.page || "1"));
-  const categoryFilter = params.category;
+  const { slug } = await params;
+  const sp = await searchParams;
+  const page = Math.max(1, Number(sp.page || "1"));
 
   await dbConnect();
 
-  const categories = await Category.find({ isActive: true }).sort({ name: 1 }).lean<CategoryDoc[]>();
-
-  const query: Record<string, unknown> = { published: true };
-  if (categoryFilter) {
-    query.category = categoryFilter;
+  const category = await Category.findOne({ slug, isActive: true }).lean<CategoryDoc>();
+  if (!category) {
+    notFound();
   }
 
   const [projects, total] = await Promise.all([
-    Project.find(query)
+    Project.find({ category: slug, published: true })
       .sort({ createdAt: -1 })
       .skip((page - 1) * PAGE_SIZE)
       .limit(PAGE_SIZE)
       .lean<ProjectDoc[]>(),
-    Project.countDocuments(query),
+    Project.countDocuments({ category: slug, published: true }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -56,59 +57,49 @@ export default async function AllProjectsPage({
   return (
     <main className="min-h-screen bg-linear-to-b from-white via-slate-50 to-white px-4 py-12 dark:from-black dark:via-neutral-950 dark:to-black sm:px-6">
       <div className="mx-auto w-full max-w-6xl space-y-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-              All Projects
-            </h1>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-              Page {page} of {totalPages} ({total} {total === 1 ? "project" : "projects"})
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/categories"
-              className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-            >
-              <FolderOpen className="h-4 w-4" />
-              Categories
-            </Link>
-            <Link
-              href="/#projects"
-              className="inline-flex items-center rounded-full border border-orange-500/30 px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-            >
-              Back
-            </Link>
-          </div>
-        </div>
-
-        {categories.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href="/all-projects"
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                !categoryFilter
-                  ? "bg-orange-500 text-white"
-                  : "border border-orange-500/30 text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-              }`}
-            >
-              All
-            </Link>
-            {categories.map((cat) => (
-              <Link
-                key={cat._id}
-                href={`/all-projects?category=${cat.slug}`}
-                className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition ${
-                  categoryFilter === cat.slug
-                    ? "bg-orange-500 text-white"
-                    : "border border-orange-500/30 text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-                }`}
-              >
-                {cat.name}
-              </Link>
-            ))}
+        {category.coverImage && (
+          <div className="relative h-48 w-full overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800 sm:h-64">
+            <Image
+              src={category.coverImage}
+              alt={category.name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           </div>
         )}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <Link
+                href="/#projects"
+                className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Categories
+              </Link>
+              <Link
+                href="/categories"
+                className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
+              >
+                All Categories
+              </Link>
+              <span className="inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-semibold text-orange-600 dark:text-orange-300">
+                <FolderOpen className="h-4 w-4" />
+                {total} {total === 1 ? "project" : "projects"}
+              </span>
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white capitalize">
+              {category.name}
+            </h1>
+            {category.description && (
+              <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                {category.description}
+              </p>
+            )}
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => {
@@ -134,15 +125,10 @@ export default async function AllProjectsPage({
                     <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400">
                       No image
                     </div>
-                  )}
-                  {project.category && (
-                    <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-orange-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                      {project.category}
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
 
-                <div className="space-y-3 p-5">
+                  <div className="space-y-3 p-5">
                   <div>
                     <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
                       {project.title}
@@ -156,17 +142,9 @@ export default async function AllProjectsPage({
                       <Heart className="h-4 w-4 text-orange-500" />
                       {project.likes ?? 0} likes
                     </span>
-                    <div className="flex items-center gap-2">
-                      {project.category && (
-                        <Link
-                          href={`/all-projects?category=${project.category}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="rounded-full border border-orange-500/20 px-2 py-1 text-[10px] tracking-[0.25em] text-orange-600 hover:bg-orange-500/10 dark:text-orange-300 capitalize"
-                        >
-                          {project.category}
-                        </Link>
-                      )}
-                    </div>
+                    <span className="rounded-full border border-orange-500/20 px-2 py-1 text-[10px] uppercase tracking-[0.25em] text-orange-600 dark:text-orange-300">
+                      View Project
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -178,7 +156,10 @@ export default async function AllProjectsPage({
           <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center dark:border-slate-800">
             <FolderOpen className="mx-auto h-12 w-12 text-slate-400 mb-4" />
             <p className="text-lg font-medium text-slate-600 dark:text-slate-400">
-              No projects found
+              No projects in this category yet
+            </p>
+            <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
+              Check back soon for new work
             </p>
           </div>
         )}
@@ -186,7 +167,7 @@ export default async function AllProjectsPage({
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-3">
             <Link
-              href={page > 1 ? `/all-projects?page=${page - 1}${categoryFilter ? `&category=${categoryFilter}` : ""}` : "#"}
+              href={page > 1 ? `/categories/${slug}?page=${page - 1}` : "#"}
               aria-disabled={page <= 1}
               className={`rounded-full px-4 py-2 text-sm font-semibold ${
                 page > 1
@@ -200,7 +181,7 @@ export default async function AllProjectsPage({
               {visiblePages.map((pageNo) => (
                 <Link
                   key={pageNo}
-                  href={`/all-projects?page=${pageNo}${categoryFilter ? `&category=${categoryFilter}` : ""}`}
+                  href={`/categories/${slug}?page=${pageNo}`}
                   aria-current={pageNo === page ? "page" : undefined}
                   className={`rounded-full px-3 py-2 text-sm font-semibold ${
                     pageNo === page
@@ -213,7 +194,7 @@ export default async function AllProjectsPage({
               ))}
             </div>
             <Link
-              href={page < totalPages ? `/all-projects?page=${page + 1}${categoryFilter ? `&category=${categoryFilter}` : ""}` : "#"}
+              href={page < totalPages ? `/categories/${slug}?page=${page + 1}` : "#"}
               aria-disabled={page >= totalPages}
               className={`rounded-full px-4 py-2 text-sm font-semibold ${
                 page < totalPages

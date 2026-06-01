@@ -1,11 +1,20 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Poppins, Hind_Siliguri } from 'next/font/google';
 import './globals.css';
 import Providers from "./providers";
-import CustomCursor from "@/components/ui/CustomCursor";
 import { siteConfig } from "@/lib/site";
 
-const inter = Inter({ subsets: ['latin'] });
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-poppins',
+});
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-hind-siliguri',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -59,11 +68,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <div aria-hidden="true" className="site-bg" />
+      <body className={`${poppins.variable} ${hindSiliguri.variable} font-sans`} suppressHydrationWarning>
         <Providers>
-          <CustomCursor />
-        
           {children}
         </Providers>
       </body>

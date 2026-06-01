@@ -11,11 +11,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
-    {
-      url: `${siteConfig.url}/projects`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
+     {
+       url: `${siteConfig.url}/all-projects`,
+       lastModified: now,
+       changeFrequency: "weekly",
+       priority: 0.8,
+     },
+     {
+       url: `${siteConfig.url}/categories`,
+       lastModified: now,
+       changeFrequency: "weekly",
+       priority: 0.7,
+     },
   ];
 }
