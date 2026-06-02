@@ -1,17 +1,15 @@
-import Image from "next/image";
-import Link from "next/link";
 import dbConnect from "@/lib/db";
 import Project, { type IProject } from "@/models/Project";
-import Category, { type ICategory } from "@/models/Category";
-import { Heart, FolderOpen } from "lucide-react";
+
+import ProjectCard from "@/components/ProjectCard";
+import { TopNavigation,  PaginationNav } from "@/components/AllProjectsNavigation";
 
 export const revalidate = 300;
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 20;
 const MAX_PAGE_BUTTONS = 5;
 
 type ProjectDoc = IProject & { _id: { toString: () => string } };
-type CategoryDoc = ICategory & { _id: { toString: () => string } };
 
 function getVisiblePages(currentPage: number, totalPages: number) {
   const half = Math.floor(MAX_PAGE_BUTTONS / 2);
@@ -34,8 +32,6 @@ export default async function AllProjectsPage({
 
   await dbConnect();
 
-  const categories = await Category.find({ isActive: true }).sort({ name: 1 }).lean<CategoryDoc[]>();
-
   const query: Record<string, unknown> = { published: true };
   if (categoryFilter) {
     query.category = categoryFilter;
@@ -53,178 +49,51 @@ export default async function AllProjectsPage({
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const visiblePages = getVisiblePages(page, totalPages);
 
+  const serializedProjects = projects.map((project) => ({
+    ...project,
+    _id: project._id.toString(),
+  }));
+
+
+
   return (
-    <main className="min-h-screen bg-linear-to-b from-white via-slate-50 to-white px-4 py-12 dark:from-black dark:via-neutral-950 dark:to-black sm:px-6">
-      <div className="mx-auto w-full max-w-6xl space-y-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <main style={{ background: 'var(--bg)', minHeight: '100vh', padding: '60px 20px' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', gap: '20px', flexWrap: 'wrap' }}>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+            <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--text)', marginBottom: '8px' }}>
               All Projects
             </h1>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <p style={{ color: 'var(--muted)', fontSize: '14px' }}>
               Page {page} of {totalPages} ({total} {total === 1 ? "project" : "projects"})
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/categories"
-              className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-            >
-              <FolderOpen className="h-4 w-4" />
-              Categories
-            </Link>
-            <Link
-              href="/#projects"
-              className="inline-flex items-center rounded-full border border-orange-500/30 px-4 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-            >
-              Back
-            </Link>
-          </div>
+          <TopNavigation />
         </div>
 
-        {categories.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href="/all-projects"
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                !categoryFilter
-                  ? "bg-orange-500 text-white"
-                  : "border border-orange-500/30 text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-              }`}
-            >
-              All
-            </Link>
-            {categories.map((cat) => (
-              <Link
-                key={cat._id}
-                href={`/all-projects?category=${cat.slug}`}
-                className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition ${
-                  categoryFilter === cat.slug
-                    ? "bg-orange-500 text-white"
-                    : "border border-orange-500/30 text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-                }`}
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </div>
-        )}
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => {
-            const projectId = project._id.toString();
-            const cover = project.thumbnailImage || project.posterImage;
-
-            return (
-              <Link
-                key={projectId}
-                href={`/projects/${projectId}`}
-                className="group relative block overflow-hidden rounded-3xl border border-black/10 bg-white shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-2 hover:border-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/10 dark:border-white/10 dark:bg-neutral-950 dark:shadow-black/40"
-              >
-                <div className="relative aspect-4/3 overflow-hidden bg-gray-100 dark:bg-gray-800">
-                  {cover ? (
-                    <Image
-                      src={cover}
-                      alt={project.title}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400">
-                      No image
-                    </div>
-                  )}
-                  {project.category && (
-                    <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-orange-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                      {project.category}
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3 p-5">
-                  <div>
-                    <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-                      {project.title}
-                    </h2>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                      {project.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
-                    <span className="inline-flex items-center gap-2">
-                      <Heart className="h-4 w-4 text-orange-500" />
-                      {project.likes ?? 0} likes
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {project.category && (
-                        <Link
-                          href={`/all-projects?category=${project.category}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="rounded-full border border-orange-500/20 px-2 py-1 text-[10px] tracking-[0.25em] text-orange-600 hover:bg-orange-500/10 dark:text-orange-300 capitalize"
-                        >
-                          {project.category}
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {projects.length === 0 && (
-          <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center dark:border-slate-800">
-            <FolderOpen className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-            <p className="text-lg font-medium text-slate-600 dark:text-slate-400">
-              No projects found
-            </p>
-          </div>
-        )}
-
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3">
-            <Link
-              href={page > 1 ? `/all-projects?page=${page - 1}${categoryFilter ? `&category=${categoryFilter}` : ""}` : "#"}
-              aria-disabled={page <= 1}
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                page > 1
-                  ? "border border-orange-500/30 text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-                  : "pointer-events-none border border-neutral-300 text-neutral-400 dark:border-neutral-700 dark:text-neutral-600"
-              }`}
-            >
-              Prev
-            </Link>
-            <div className="flex items-center gap-2">
-              {visiblePages.map((pageNo) => (
-                <Link
-                  key={pageNo}
-                  href={`/all-projects?page=${pageNo}${categoryFilter ? `&category=${categoryFilter}` : ""}`}
-                  aria-current={pageNo === page ? "page" : undefined}
-                  className={`rounded-full px-3 py-2 text-sm font-semibold ${
-                    pageNo === page
-                      ? "bg-orange-500 text-white"
-                      : "border border-orange-500/30 text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-                  }`}
-                >
-                  {pageNo}
-                </Link>
-              ))}
+        <div className="projects" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+          {serializedProjects.length > 0 ? (
+            serializedProjects.map((project) => (
+              <ProjectCard
+                key={project._id}
+                _id={project._id}
+                title={project.title}
+                category={project.category}
+                thumbnailImage={project.thumbnailImage}
+                posterImage={project.posterImage}
+                isFeatured={project.isFeatured}
+                showAnimation={false}
+              />
+            ))
+          ) : (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--muted)' }}>
+              <p>No projects found</p>
             </div>
-            <Link
-              href={page < totalPages ? `/all-projects?page=${page + 1}${categoryFilter ? `&category=${categoryFilter}` : ""}` : "#"}
-              aria-disabled={page >= totalPages}
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                page < totalPages
-                  ? "border border-orange-500/30 text-orange-600 hover:bg-orange-500/10 dark:text-orange-300"
-                  : "pointer-events-none border border-neutral-300 text-neutral-400 dark:border-neutral-700 dark:text-neutral-600"
-              }`}
-            >
-              Next
-            </Link>
-          </div>
-        )}
+          )}
+        </div>
+
+        <PaginationNav page={page} totalPages={totalPages} categoryFilter={categoryFilter} visiblePages={visiblePages} />
       </div>
     </main>
   );

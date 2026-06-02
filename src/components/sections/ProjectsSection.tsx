@@ -9,9 +9,9 @@ type ProjectDoc = Omit<IProject, "_id"> & {
 export default async function ProjectsSection() {
   await dbConnect();
 
-  const projects = await Project.find({ published: true })
+  const projects = await Project.find({ published: true, isFeatured: true })
     .sort({ createdAt: -1 })
-    .limit(30)
+    .limit(6)
     .lean<ProjectDoc[]>();
 
   const serializedProjects = projects.map((project) => ({

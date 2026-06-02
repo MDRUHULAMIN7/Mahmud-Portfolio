@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
+import ProjectCard from "@/components/ProjectCard";
 
 interface Project {
   _id: string;
@@ -10,17 +10,14 @@ interface Project {
   category?: string;
   thumbnailImage?: string;
   posterImage?: string;
+  isFeatured?: boolean;
 }
 
 interface ProjectsSectionClientProps {
   projects: Project[];
 }
 
-const PROJECTS_PER_PAGE = 6;
-
 export default function ProjectsSectionClient({ projects }: ProjectsSectionClientProps) {
-  const [displayed, setDisplayed] = useState(1);
-  const [loading, setLoading] = useState(false);
   const projectsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,18 +41,9 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
     revealElements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, [projects, displayed]);
+  }, [projects]);
 
-  const visibleProjects = projects.slice(0, displayed);
-  const hasMore = displayed < projects.length;
-
-  if (loading) {
-    return (
-      <section id="projects">
-        <div className="container text-center text-muted">Loading projects...</div>
-      </section>
-    );
-  }
+  const visibleProjects = projects;
 
   return (
     <section id="projects" ref={projectsRef}>
@@ -66,47 +54,21 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
         </div>
 
         <div className="projects" id="projectGrid">
-          {visibleProjects.map((project, index) => {
-            const imageSrc = project.thumbnailImage || project.posterImage || '/photo2.png';
-            return (
-              <Link
-                key={project._id}
-                href={`/projects/${project._id}`}
-                className="project reveal"
-                style={{ transitionDelay: `${Math.min(index, 5) * 0.08}s` }}
-              >
-                <div className="thumb">
-                  <Image
-                    src={imageSrc}
-                    alt={project.title}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    loading="lazy"
-                  />
-                </div>
-
-                <div className="body">
-                  <div className="tag">{project.category || 'Project'}</div>
-                  <h4>
-                    {project.title}
-                    <span className="arrow">&rarr;</span>
-                  </h4>
-                </div>
-              </Link>
-            );
-          })}
+          {visibleProjects.map((project, index) => (
+            <ProjectCard
+              key={project._id}
+              {...project}
+              index={index}
+              showAnimation={true}
+            />
+          ))}
         </div>
 
-        {hasMore && (
-          <div className="show-more-wrap">
-            <button
-              onClick={() => setDisplayed((prev) => prev + PROJECTS_PER_PAGE)}
-              className="btn btn-primary"
-            >
-              Show More
-            </button>
-          </div>
-        )}
+        <div className="show-more-wrap">
+          <Link href="/all-projects" className="btn btn-primary">
+            Show All
+          </Link>
+        </div>
       </div>
     </section>
   );

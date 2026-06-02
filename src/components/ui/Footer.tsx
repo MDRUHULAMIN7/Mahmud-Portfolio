@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="footer">
+    <div className="">
       <div className="container">
         <div className="footer-grid">
           <div>
@@ -32,13 +32,12 @@ export default function Footer() {
             <ul>
               <li><a href="#about">About Us</a></li>
               <li><a href="#contact">Contact</a></li>
-              <li><a href="/admin">Admin</a></li>
             </ul>
           </div>
         </div>
         
         <div className="footer-bottom">&copy; 2026 Md Mahmud. All rights reserved.</div>
       </div>
-    </footer>
+    </div>
   );
 }

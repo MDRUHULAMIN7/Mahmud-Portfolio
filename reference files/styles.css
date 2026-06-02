@@ -107,7 +107,7 @@ img{max-width:100%;display:block}
 animation:blobMove 20s ease-in-out infinite}
 
 /* SECTION */
-section{padding:80px 0}
+
 .section-head{text-align:center;margin-bottom:48px}
 .eyebrow{color:var(--green-2);font-weight:600;font-size:14px;letter-spacing:1px;text-transform:uppercase}
 .section-head h2{font-size:clamp(28px,4vw,42px);font-weight:800;margin-top:8px}

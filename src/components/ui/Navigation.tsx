@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import ThemeToggle from "./ThemeToggle";
+import { useState } from "react";
 
 const links = [
   { href: "#home", label: "Home" },
@@ -46,14 +45,7 @@ export default function Navigation() {
               {link.label}
             </a>
           ))}
-          <a
-            className="btn btn-primary"
-            href="https://wa.me/8801345347968"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Contact Me
-          </a>
+         
         </nav>
 
         {/* Mobile Menu Toggle */}

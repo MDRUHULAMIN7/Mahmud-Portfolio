@@ -166,7 +166,7 @@ export default function ProjectDetails({ project }: ProjectDetailsProps) {
               )}
 
               <div className="pd-line">
-                📞 <b>WhatsApp:</b> +8801701541689
+                📞 <b>WhatsApp:</b> +880 1345347968
               </div>
               <p className="pd-lede">
                 Let&apos;s make your brand impossible to ignore 🎨

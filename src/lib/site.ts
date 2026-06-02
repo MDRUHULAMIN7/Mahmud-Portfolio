@@ -7,7 +7,7 @@ export const siteConfig = {
   phone: "+8801903001637",
   social: {
     facebook: "https://www.facebook.com/mahmudmir32",
-    behance: "https://www.behance.net/your-profile",
+    behance: "https://www.behance.net/mdmahmud121",
     linkedin: "https://www.linkedin.com/in/your-profile",
   },
 };

@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Project from '@/models/Project';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
-import User from '@/models/User';
-import bcrypt from 'bcryptjs';
-
 const getDefaultViews = () => Math.floor(Math.random() * 501) + 1000;
 
 export async function GET(req: Request) {
@@ -201,7 +196,7 @@ export async function PATCH(req: Request) {
 export async function DELETE(req: Request) {
   try {
     await dbConnect();
-    const { id, password } = await req.json();
+    const { id } = await req.json();
 
     if (!id) {
       return NextResponse.json(

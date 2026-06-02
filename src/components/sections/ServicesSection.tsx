@@ -7,14 +7,14 @@ const services = [
     title: "YouTube Thumbnail Design",
     icon: "▶",
     description: "Click-worthy, high-CTR thumbnails crafted to boost your video views and channel growth.",
-    delivery: "3-5 Days Delivery",
+    delivery: "1-2 Days Delivery",
     delay: "stagger-1",
   },
   {
     title: "Social Media Ad Design",
     icon: "★",
     description: "Scroll-stopping ad creatives for Facebook, Instagram and more — built to convert.",
-    delivery: "3-6 Days Delivery",
+    delivery: "1-2 Days Delivery",
     delay: "stagger-2",
   },
   {
@@ -61,7 +61,7 @@ export default function ServicesSection() {
         </div>
 
         <div className="services">
-          {services.map((service, index) => (
+          {services.map((service) => (
             <div
               key={service.title}
               className={`service reveal ${service.delay}`}
