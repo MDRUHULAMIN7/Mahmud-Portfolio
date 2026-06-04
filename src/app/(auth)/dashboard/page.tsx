@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useCallback, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import type { IProject } from "@/models/Project";
+import type { IContactMessage } from "@/models/ContactMessage";
 import Image from "next/image";
 
 const fetchProjects = async () => {
@@ -11,10 +12,16 @@ const fetchProjects = async () => {
   return data;
 };
 
+const fetchMessages = async () => {
+  const { data } = await axios.get<IContactMessage[]>("/api/messages");
+  return data;
+};
+
 export default function Dashboard() {
   const { status } = useSession();
   const isLoggedIn = status === "authenticated";
   const [projects, setProjects] = useState<IProject[]>([]);
+  const [messages, setMessages] = useState<IContactMessage[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     id: '',
@@ -72,6 +79,14 @@ export default function Dashboard() {
     }
   }, []);
 
+  const refreshMessages = useCallback(async () => {
+    try {
+      setMessages(await fetchMessages());
+    } catch (error) {
+      console.error("Failed to load messages", error);
+    }
+  }, []);
+
   // Load dashboard data after NextAuth confirms the session.
   useEffect(() => {
     if (!isLoggedIn) {
@@ -88,6 +103,16 @@ export default function Dashboard() {
       })
       .catch((error) => {
         console.error("Failed to load projects", error);
+      });
+
+    void fetchMessages()
+      .then((data) => {
+        if (!ignore) {
+          setMessages(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load messages", error);
       });
 
     return () => {
@@ -185,6 +210,20 @@ export default function Dashboard() {
       } catch (error) {
         console.error("Failed to delete project", error);
         showToast("Failed to delete project");
+      }
+    }
+  };
+
+  // Handle message delete
+  const handleDeleteMessage = async (id: string) => {
+    if (confirm('Delete this message?')) {
+      try {
+        await axios.delete("/api/messages", { data: { id } });
+        showToast("Message deleted");
+        refreshMessages();
+      } catch (error) {
+        console.error("Failed to delete message", error);
+        showToast("Failed to delete message");
       }
     }
   };
@@ -580,6 +619,34 @@ export default function Dashboard() {
                 ) : ''}
               </div>
             </form>
+          </div>
+
+          <div className="admin-card" style={{ background: 'var(--card-2)', border: '1px solid var(--border)', borderRadius: '14px', padding: '22px', marginBottom: '20px', transition: 'all 0.3s ease' }} onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--green-2)'} onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border)'}>
+            <h3 style={{ marginBottom: '14px', color: 'var(--green-2)' }}>Messages ({messages.length})</h3>
+            <div className="admin-list" style={{ display: 'grid', gap: '12px' }}>
+              {messages.length > 0 ? messages.map((message) => (
+                <article key={message._id || ''} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'flex-start', marginBottom: '6px' }}>
+                    <div>
+                      <h4 style={{ color: 'var(--text)', marginBottom: '2px', fontSize: '15px' }}>{message.name}</h4>
+                      <p style={{ color: 'var(--muted)', fontSize: '12px', marginBottom: '0' }}>{message.email}</p>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteMessage(message._id || '')}
+                      style={{ background: '#3a1a1a', color: '#ff6b6b', fontSize: '12px', padding: '6px 10px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <p style={{ color: 'var(--text)', fontSize: '13px', lineHeight: 1.6, marginBottom: '8px', whiteSpace: 'pre-wrap' }}>{message.message}</p>
+                  <p style={{ color: 'var(--muted)', fontSize: '11px', marginBottom: 0 }}>
+                    {new Date(message.createdAt).toLocaleString()}
+                  </p>
+                </article>
+              )) : (
+                <p style={{ color: 'var(--muted)' }}>No messages yet.</p>
+              )}
+            </div>
           </div>
 
           <div className="admin-card" style={{ background: 'var(--card-2)', border: '1px solid var(--border)', borderRadius: '14px', padding: '22px', marginBottom: '20px', transition: 'all 0.3s ease' }} onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--green-2)'} onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border)'}>
