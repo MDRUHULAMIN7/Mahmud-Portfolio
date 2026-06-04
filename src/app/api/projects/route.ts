@@ -3,6 +3,7 @@ import dbConnect from '@/lib/db';
 import Project from '@/models/Project';
 const getDefaultViews = () => Math.floor(Math.random() * 501) + 1000;
 
+
 export async function GET(req: Request) {
   try {
     await dbConnect();
