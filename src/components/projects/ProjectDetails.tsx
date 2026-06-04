@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {PhoneCall } from "lucide-react";
 import { toast } from "sonner";
 import { IProject } from "@/models/Project";
@@ -50,6 +50,7 @@ const getYear = (value: string) => {
 };
 
 export default function ProjectDetails({ project }: ProjectDetailsProps) {
+  const router = useRouter();
   const [likes, setLikes] = useState(project.likes ?? 0);
   const [hasLiked, setHasLiked] = useState(false);
   const [liking, setLiking] = useState(false);
@@ -123,17 +124,31 @@ export default function ProjectDetails({ project }: ProjectDetailsProps) {
     window.setTimeout(() => setShareCopied(false), 1600);
   };
 
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push("/all-projects");
+  };
+
   return (
     <main className="detail">
-      <div className="container">
+      <div className="container ">
         <div id="detail">
-          <Link className="back reveal visible" href="/#projects">
-            ← All projects
-          </Link>
+       
 
           <div className="pd-layout">
             <aside className="pd-left reveal visible">
-              <div className="pd-tag">
+               <button
+            type="button"
+            className="back reveal visible cursor-pointer text-sm"
+            onClick={handleBack}
+            aria-label="Go back to projects"
+          >
+            ← Back to projects
+          </button>  <div className="pd-tag">
                 {category} · {getYear(project.publishDate)}
               </div>
               <h1 className="pd-title">{project.title}</h1>

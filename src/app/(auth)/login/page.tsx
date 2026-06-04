@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -28,96 +29,65 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
-      <div className="p-8 rounded-2xl w-full max-w-md" style={{ 
-        background: 'var(--card-2)',
-        border: '1px solid var(--border)'
-      }}>
-        <h1 className="text-2xl font-bold mb-2 text-center" style={{ color: 'var(--text)' }}>Admin Login</h1>
-        <p className="text-center mb-6" style={{ color: 'var(--muted)' }}>Welcome back, Mahmud!</p>
-        
+    <main className="login-shell">
+      <div aria-hidden="true" className="login-overlay" />
+
+      <section className="login-card">
+        <div className="text-center">
+          <span className="login-chip">Admin Access</span>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight" style={{ color: "var(--text)" }}>
+            Welcome back
+          </h1>
+          <p className="mt-2 text-sm leading-6" style={{ color: "var(--muted)" }}>
+            Sign in to manage your portfolio, featured projects, and inbox messages.
+          </p>
+        </div>
+
         {error && (
-          <div className="mb-4 p-3 rounded-lg text-sm text-center" style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            color: '#f87171'
-          }}>
+          <div
+            className="mb-4 rounded-xl border border-red-500/20 p-3 text-center text-sm"
+            style={{ background: "rgba(239, 68, 68, 0.10)", color: "#fca5a5" }}
+          >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="login-form">
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--muted)' }}>Email</label>
+            <label className="login-label">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-3 rounded-lg outline-none focus:ring-2"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-                transition: 'all 0.25s ease'
-              }}
+              className="login-input"
               placeholder="admin@example.com"
-              onFocus={(e) => {
-                e.target.style.borderColor = 'var(--green-2)';
-                e.target.style.boxShadow = '0 0 0 2px rgba(34, 197, 94, 0.15)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'var(--border)';
-                e.target.style.boxShadow = 'none';
-              }}
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--muted)' }}>Password</label>
+            <label className="login-label">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-3 rounded-lg outline-none focus:ring-2"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-                transition: 'all 0.25s ease'
-              }}
+              className="login-input"
               placeholder="••••••••"
-              onFocus={(e) => {
-                e.target.style.borderColor = 'var(--green-2)';
-                e.target.style.boxShadow = '0 0 0 2px rgba(34, 197, 94, 0.15)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'var(--border)';
-                e.target.style.boxShadow = 'none';
-              }}
             />
           </div>
-          <button
-            type="submit"
-            className="w-full py-3 rounded-lg font-bold transition-all"
-            style={{
-              background: 'var(--green)',
-              color: '#fff'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = 'var(--green-2)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(34, 197, 94, 0.35)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'var(--green)';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
+
+          <button type="submit" className="login-button">
             Sign In
           </button>
         </form>
-      </div>
-    </div>
+
+        <p className="login-help">Use your admin credentials to continue.</p>
+
+        <Link href="/" className="login-link">
+          ← Back to site
+        </Link>
+      </section>
+    </main>
   );
 }
