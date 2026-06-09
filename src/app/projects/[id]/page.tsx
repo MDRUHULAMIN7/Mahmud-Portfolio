@@ -11,7 +11,7 @@ export const revalidate = 300;
 type ProjectDoc = IProject & { _id: { toString: () => string } };
 
 const PROJECT_DETAILS_FIELDS =
-  "title description category thumbnailImage posterImage cover images highlights elementsImages accessibleLink authorName likes views createdAt updatedAt publishDate published";
+  "title description category thumbnailImage posterImage cover youtubeVideoLink images highlights elementsImages accessibleLink authorName likes views createdAt updatedAt publishDate published";
 
 function serializeProject(project: ProjectDoc) {
   return {

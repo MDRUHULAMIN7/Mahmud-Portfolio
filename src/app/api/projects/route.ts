@@ -78,6 +78,9 @@ export async function POST(req: Request) {
     if (body.cover && !body.thumbnailImage) {
       body.thumbnailImage = body.cover;
     }
+    if (typeof body.youtubeVideoLink === 'string') {
+      body.youtubeVideoLink = body.youtubeVideoLink.trim();
+    }
     if (body.images && !Array.isArray(body.images)) {
       try {
         body.images = body.images.split('\n').map((s: string) => s.trim()).filter(Boolean);
@@ -134,6 +137,7 @@ export async function PATCH(req: Request) {
       'thumbnailImage',
       'posterImage',
       'accessibleLink',
+      'youtubeVideoLink',
       'elementsImages',
       'published',
       'cover',
@@ -153,6 +157,9 @@ export async function PATCH(req: Request) {
     // Handle reference fields (cover, images, highlights)
     if (safeUpdates.cover && !safeUpdates.thumbnailImage) {
       safeUpdates.thumbnailImage = safeUpdates.cover;
+    }
+    if (typeof safeUpdates.youtubeVideoLink === 'string') {
+      safeUpdates.youtubeVideoLink = safeUpdates.youtubeVideoLink.trim();
     }
     if (safeUpdates.images && !Array.isArray(safeUpdates.images)) {
       try {

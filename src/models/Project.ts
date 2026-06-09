@@ -9,6 +9,7 @@ export interface IProject {
   thumbnailImage?: string;
   posterImage?: string;
   cover?: string;
+  youtubeVideoLink?: string;
   images?: string[];
   highlights?: string[];
   elementsImages: string[];
@@ -31,6 +32,7 @@ const ProjectSchema = new Schema<IProject>(
     thumbnailImage: { type: String },
     posterImage: { type: String },
     cover: { type: String },
+    youtubeVideoLink: { type: String },
     images: { type: [String], default: [] },
     highlights: { type: [String], default: [] },
     elementsImages: { type: [String], default: [] },

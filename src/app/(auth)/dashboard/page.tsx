@@ -32,6 +32,7 @@ export default function Dashboard() {
     description: '',
     highlights: '',
     featured: false,
+    youtubeVideoLink: '',
   });
   const toastContainerRef = useRef<HTMLDivElement>(null);
 
@@ -141,6 +142,7 @@ export default function Dashboard() {
       highlights: (form.elements.namedItem('highlights') as HTMLTextAreaElement).value,
       featured: (form.elements.namedItem('featured') as HTMLInputElement).checked,
       isFeatured: (form.elements.namedItem('featured') as HTMLInputElement).checked,
+      youtubeVideoLink: (form.elements.namedItem('youtubeVideoLink') as HTMLInputElement).value,
     };
 
     if (!data.title) {
@@ -177,6 +179,7 @@ export default function Dashboard() {
     description: '',
     highlights: '',
     featured: false,
+    youtubeVideoLink: '',
   });
 
   // Project to form data
@@ -190,6 +193,7 @@ export default function Dashboard() {
       description: project.description || '',
       highlights: (project.highlights || []).join('\n'),
       featured: project.isFeatured === true,
+      youtubeVideoLink: project.youtubeVideoLink || '',
     };
   };
 
@@ -462,6 +466,36 @@ export default function Dashboard() {
                   />
                   <span style={{ fontWeight: 600 }}>Show this project on home page</span>
                 </label>
+              </div>
+              <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>YouTube video link</label>
+                  <input
+                    name="youtubeVideoLink"
+                    value={formData.youtubeVideoLink}
+                    onChange={handleInputChange}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    style={{
+                      width: '100%',
+                      background: 'var(--card)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text)',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      fontFamily: 'inherit',
+                      fontSize: '14px',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'var(--green-2)';
+                      e.target.style.boxShadow = '0 0 0 2px rgba(34, 197, 94, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'var(--border)';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                </div>
               </div>
               <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
